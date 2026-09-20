@@ -227,7 +227,7 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyymhpJv5xzH6GpoAWBrkUeZtM73iM7ynulEwjeFC8vK6UWPfnRJOkwoxGkFH82iNc/exec";
+    const SCRIPT_URL = "請填入新的 Apps Script /exec 網址";
 
     // 紅文旦只有單一品項；若試算表標題有些微差異，會自動比對含「紅文旦」且含「10斤」的欄位
     const ITEM_KEY = "紅文旦 10斤裝 — NT$600/箱";
@@ -343,8 +343,8 @@
           <div>
             <div class="info-label">收件人 / 電話 / 地址</div>
             <div class="info-value">
-              ${escapeHtml(val(order, "收件人姓名", "無"))} / ${escapeHtml(val(order, "收件人電話", "無"))}<br>
-              ${escapeHtml(val(order, "收件人地址", "無"))}
+              ${escapeHtml(val(order, "收件人姓名去識別", val(order, "收件人姓名", "無")))} / ${escapeHtml(val(order, "收件人電話去識別", val(order, "收件人電話", "無")))}<br>
+              ${escapeHtml(val(order, "收件人地址去識別", val(order, "收件人地址", "無")))}
             </div>
           </div>
         `;
@@ -414,7 +414,7 @@
                 <span>NT$ ${money(shipping)}</span>
               </div>
               <div class="shipping-note">
-                ※ 運費計算 ─ (1) 寄送指定地址：同一地址滿 ${FREE_SHIPPING_WEIGHT} 斤以上免運，未滿 ${FREE_SHIPPING_WEIGHT} 斤運費 100 元。(2) 送到永康奇美醫院自取免運費。
+                ※ 運費計算 ─ (1) 寄送指定地址：同一地址滿 ${FREE_SHIPPING_WEIGHT} 斤以上免運費。(2) 送到永康奇美醫院自取免運費。
               </div>
               <div class="pricing-row total">
                 <span>應付總金額（含運費）</span>
