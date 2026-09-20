@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>幸福園紅文旦 — 線上訂單查詢</title>
+  <style>
+    :root {
+      --primary-color: #9d2235;
+      --primary-dark: #6f1626;
+      --primary-light: #d96a6a;
+      --bg-color: #f7f4f3;
+      --card-bg: #ffffff;
+      --text-main: #2b2d42;
+      --text-muted: #6c757d;
+      --border-color: #e8e2e1;
+      --accent-badge: #fde8e8;
+      --accent-badge-text: #7f1d1d;
+      --pay-badge: #fff3bf;
+      --pay-badge-text: #d9480f;
+      --ship-badge: #dbeafe;
+      --ship-badge-text: #1e40af;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container { width: 100%; max-width: 680px; }
+
+    .header-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 28px 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .header-card h1 { font-size: 24px; color: var(--primary-color); margin-bottom: 8px; }
+    .header-card p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+    .search-box { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px 16px;
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus { border-color: var(--primary-light); }
+
+    .btn-group { display: flex; gap: 8px; }
+
+    .btn {
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .search-btn { background-color: var(--primary-color); color: #fff; }
+    .search-btn:hover { background-color: var(--primary-dark); }
+    .search-btn:disabled { background-color: #d9b3b8; cursor: not-allowed; }
+
+    .clear-btn { background-color: #e9e4e3; color: #4a5568; }
+    .clear-btn:hover { background-color: #d8d1d0; color: #2d3748; }
+
+    .order-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .card-header {
+      background: #fbfafa;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .order-id { font-size: 13px; color: var(--text-muted); }
+    .status-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .badge { font-size: 12px; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+    .badge-order { background-color: var(--accent-badge); color: var(--accent-badge-text); }
+    .badge-payment { background-color: var(--pay-badge); color: var(--pay-badge-text); }
+    .badge-ship { background-color: var(--ship-badge); color: var(--ship-badge-text); }
+
+    .card-body { padding: 20px; }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      border-left: 4px solid var(--primary-light);
+      padding-left: 8px;
+    }
+
+    .item-list {
+      background: #fbf7f7;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+    }
+
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 14px;
+      border-bottom: 1px dashed #efe6e6;
+    }
+
+    .item-row:last-child { border-bottom: none; }
+    .item-qty { font-weight: 700; color: var(--primary-color); }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 520px) {
+      .info-grid { grid-template-columns: 1fr; }
+    }
+
+    .info-label { color: var(--text-muted); margin-bottom: 2px; font-size: 13px; }
+    .info-value { font-weight: 500; word-break: break-all; }
+
+    .pricing-box {
+      background: #fdfdfd;
+      border: 1px solid #f0eaea;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+    }
+
+    .pricing-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; }
+
+    .shipping-note { font-size: 12px; color: #718096; line-height: 1.5; margin: 4px 0 8px 0; }
+
+    .pricing-row.total {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border-color);
+      font-size: 16px;
+      font-weight: 700;
+      color: #d90429;
+    }
+
+    .bank-info-box {
+      background: #fdf3f3;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: #2b2d42;
+      border-left: 4px solid var(--primary-light);
+      line-height: 1.6;
+    }
+
+    .bank-info-box p { margin-bottom: 4px; }
+    .bank-info-box p:last-child { margin-bottom: 0; }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header-card">
+      <h1>幸福園紅文旦訂單查詢</h1>
+      <p>請輸入訂購時填寫的姓名以查詢訂單最新狀態</p>
+      <p>若有任何問題請直接聯繫許晉瑋藥師（簡碼 26-6821）</p>
+      <div class="search-box">
+        <input type="text" id="nameInput" class="search-input" placeholder="請輸入訂購人姓名" onkeydown="if(event.key === 'Enter') searchOrders()">
+        <div class="btn-group">
+          <button id="searchBtn" class="btn search-btn" onclick="searchOrders()">查詢訂單</button>
+          <button id="clearBtn" class="btn clear-btn" onclick="clearSearch()">清除重查</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="resultsArea">
+      <div class="empty-state">請在上方輸入姓名後點擊查詢</div>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyymhpJv5xzH6GpoAWBrkUeZtM73iM7ynulEwjeFC8vK6UWPfnRJOkwoxGkFH82iNc/exec";
+
+    // 紅文旦只有單一品項；若試算表標題有些微差異，會自動比對含「紅文旦」且含「10斤」的欄位
+    const ITEM_KEY = "紅文旦 10斤裝 — NT$600/箱";
+    const FREE_SHIPPING_WEIGHT = 10; // 斤
+
+    function escapeHtml(value) {
+      return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function val(order, key, fallback) {
+      const v = order[key];
+      return (v === undefined || v === null || v === "") ? (fallback === undefined ? "" : fallback) : v;
+    }
+
+    function num(order, key) {
+      const v = Number(order[key]);
+      return isNaN(v) ? 0 : v;
+    }
+
+    function money(n) {
+      return Number(n || 0).toLocaleString("zh-TW");
+    }
+
+    function getItemQty(order) {
+      if (order[ITEM_KEY] !== undefined) return Number(order[ITEM_KEY]) || 0;
+      const key = Object.keys(order).find(k => k.indexOf("紅文旦") !== -1 && k.indexOf("10斤") !== -1);
+      return key ? (Number(order[key]) || 0) : 0;
+    }
+
+    function clearSearch() {
+      const nameInput = document.getElementById("nameInput");
+      document.getElementById("resultsArea").innerHTML =
+        `<div class="empty-state">請在上方輸入姓名後點擊查詢</div>`;
+      nameInput.value = "";
+      nameInput.focus();
+    }
+
+    async function searchOrders() {
+      const nameInput = document.getElementById("nameInput");
+      const searchBtn = document.getElementById("searchBtn");
+      const resultsArea = document.getElementById("resultsArea");
+      const queryName = nameInput.value.trim();
+
+      if (!queryName) {
+        resultsArea.innerHTML = `<div class="empty-state">請輸入訂購人姓名進行查詢</div>`;
+        return;
+      }
+
+      searchBtn.disabled = true;
+      searchBtn.innerText = "查詢中...";
+      resultsArea.innerHTML = `<div class="empty-state">連線查詢中，請稍候...</div>`;
+
+      try {
+        const response = await fetch(`${SCRIPT_URL}?name=${encodeURIComponent(queryName)}`, {
+          method: "GET",
+          mode: "cors",
+          redirect: "follow"
+        });
+        const resJson = await response.json();
+
+        if (resJson.status !== "success" || !resJson.data || resJson.data.length === 0) {
+          resultsArea.innerHTML =
+            `<div class="empty-state">查無「${escapeHtml(queryName)}」的訂單記錄，請確認姓名是否與訂購時填寫的完全相同。</div>`;
+          return;
+        }
+
+        resultsArea.innerHTML = resJson.data.map(renderOrder).join("");
+
+      } catch (err) {
+        console.error(err);
+        resultsArea.innerHTML =
+          `<div class="empty-state" style="color:#d90429;">查詢失敗，請確認網路連線，或 Apps Script 是否已部署為「所有人」可存取。</div>`;
+      } finally {
+        searchBtn.disabled = false;
+        searchBtn.innerText = "查詢訂單";
+      }
+    }
+
+    function renderOrder(order) {
+      const qty = getItemQty(order);
+      const weight = val(order, "訂購斤數", qty * 10);
+
+      const itemAmount = num(order, "紅文旦金額");
+      const shipping = num(order, "運費");
+      const total = order["總金額"] !== undefined && order["總金額"] !== ""
+        ? Number(order["總金額"])
+        : itemAmount + shipping;
+
+      const payMethod = val(order, "付款方式", "未填寫");
+      const last5 = val(order, "匯款帳號後五碼", "");
+      const isTransfer = payMethod.indexOf("轉帳") !== -1 || payMethod.indexOf("匯款") !== -1;
+
+      const shipDate = val(order, "出貨日期", "");
+      const payTime = val(order, "付款時間", "");
+
+      const bankSection = isTransfer ? `
+        <div class="bank-info-box">
+          <p><strong>收款帳戶</strong></p>
+          <p>銀行代號：(004) 台灣銀行</p>
+          <p>帳號：009 00210832 7</p>
+          <p>匯款帳號後五碼：<strong>${escapeHtml(last5 || "尚未填寫")}</strong></p>
+        </div>
+      ` : "";
+
+      const deliveryType = val(order, "取貨方式", "未填寫");
+      let deliveryDetail = "";
+      if (deliveryType.indexOf("寄送") !== -1) {
+        deliveryDetail = `
+          <div>
+            <div class="info-label">收件人 / 電話 / 地址</div>
+            <div class="info-value">
+              ${escapeHtml(val(order, "收件人姓名", "無"))} / ${escapeHtml(val(order, "收件人電話", "無"))}<br>
+              ${escapeHtml(val(order, "收件人地址", "無"))}
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="order-card">
+          <div class="card-header">
+            <div class="order-id">提交時間：${escapeHtml(val(order, "Submission time", "未知"))}</div>
+            <div class="status-tags">
+              <span class="badge badge-order">${escapeHtml(val(order, "訂單狀態", "(1)已接單，處理中"))}</span>
+              <span class="badge badge-payment">${escapeHtml(val(order, "付款狀態", "(1)對帳處理中"))}</span>
+              ${shipDate ? `<span class="badge badge-ship">出貨日 ${escapeHtml(shipDate)}</span>` : ""}
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="section-title">訂單內容</div>
+            <div class="item-list">
+              <div class="item-row">
+                <span>紅文旦 10斤裝 — NT$600 / 箱</span>
+                <span class="item-qty">${qty} 箱</span>
+              </div>
+              <div class="item-row">
+                <span>訂購總斤數</span>
+                <span class="item-qty">${escapeHtml(weight)} 斤</span>
+              </div>
+            </div>
+
+            <div class="section-title">訂購人資訊</div>
+            <div class="info-grid">
+              <div>
+                <div class="info-label">訂購人姓名</div>
+                <div class="info-value">${escapeHtml(val(order, "訂購人姓名", "無"))}</div>
+              </div>
+              <div>
+                <div class="info-label">訂購人 Email</div>
+                <div class="info-value">${escapeHtml(val(order, "訂購人Email", "無"))}</div>
+              </div>
+              <div>
+                <div class="info-label">訂購人部門單位</div>
+                <div class="info-value">${escapeHtml(val(order, "訂購人部門單位", "無"))}</div>
+              </div>
+              <div>
+                <div class="info-label">聯絡方式</div>
+                <div class="info-value">${escapeHtml(val(order, "訂購人聯絡方式", "無"))}</div>
+              </div>
+              <div>
+                <div class="info-label">取貨方式</div>
+                <div class="info-value">${escapeHtml(deliveryType)}</div>
+              </div>
+              <div>
+                <div class="info-label">備註 / 特殊需求</div>
+                <div class="info-value">${escapeHtml(val(order, "備註 / 特殊需求", "無"))}</div>
+              </div>
+              ${deliveryDetail}
+            </div>
+
+            <div class="section-title">金額與付款</div>
+            <div class="pricing-box">
+              <div class="pricing-row">
+                <span>紅文旦金額</span>
+                <span>NT$ ${money(itemAmount)}</span>
+              </div>
+              <div class="pricing-row">
+                <span>運費</span>
+                <span>NT$ ${money(shipping)}</span>
+              </div>
+              <div class="shipping-note">
+                ※ 運費計算 ─ (1) 寄送指定地址：同一地址滿 ${FREE_SHIPPING_WEIGHT} 斤以上免運，未滿 ${FREE_SHIPPING_WEIGHT} 斤運費 100 元。(2) 送到永康奇美醫院自取免運費。
+              </div>
+              <div class="pricing-row total">
+                <span>應付總金額（含運費）</span>
+                <span>NT$ ${money(total)}</span>
+              </div>
+            </div>
+
+            <div class="info-grid" style="margin-bottom: 12px;">
+              <div>
+                <div class="info-label">付款方式</div>
+                <div class="info-value"><strong>${escapeHtml(payMethod)}</strong></div>
+              </div>
+              ${last5 ? `
+              <div>
+                <div class="info-label">匯款帳號後五碼</div>
+                <div class="info-value"><strong>${escapeHtml(last5)}</strong></div>
+              </div>` : ""}
+              ${payTime ? `
+              <div>
+                <div class="info-label">付款時間</div>
+                <div class="info-value">${escapeHtml(payTime)}</div>
+              </div>` : ""}
+            </div>
+
+            ${bankSection}
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
